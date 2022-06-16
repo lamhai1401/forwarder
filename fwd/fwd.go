@@ -110,6 +110,7 @@ func (f *Forwarder) Register(pcID string, trackID string) (<-chan *message.Messa
 
 	client.SetMsg(trackID, chann)
 	client.SetSub(trackID, cancel)
+	f.setClient(pcID, client)
 	return chann, nil
 }
 
@@ -135,6 +136,12 @@ func (f *Forwarder) CloseClient(pcID string) bool {
 
 	client.Close()
 	return true
+}
+
+func (f *Forwarder) setClient(pcID string, c *FwdClient) {
+	f.mutex.Lock()
+	f.clients[pcID] = c
+	f.mutex.Unlock()
 }
 
 func (f *Forwarder) GetClient(pcID string) *FwdClient {
